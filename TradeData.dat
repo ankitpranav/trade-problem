@@ -1,0 +1,17 @@
+tradeId| stockName|brokerCode| brokerName| quantity|  tradeDate|settlementDate| buySellIndicator
+234| IBM |MS | Morgan Stanley |300 | 05/15/2018 | 05/16/2018|B
+257| HCL |GS |Goldman Sachs |40 | 06/21/2018 | 06/27/2018|B
+326| Pepsi |MS  |Morgan Stanley |50 | 06/23/2018 | 06/27/2018|B
+435| DSP BlackRock |CB |CitiBank |48 | 05/25/2018 | 05/29/2018|B
+678| Google |GS | Goldman Sachs |90 | 04/15/2018 | 04/19/2018|B
+345| Facebook |MS |Morgan Stanley |125 | 03/15/2018 | 03/17/2018|B
+287| Samsung |CB |CitiBank |230 | 02/15/2018 | 02/17/2018|B
+987| IBM |MS |Morgan Stanley |180 | 04/16/2018 | 04/19/2018|B
+246| Infosys |GS |Goldman Sachs |200 | 05/20/2018 | 05/24/2018|B
+367| Unilever |CB |CitiBank |50 | 07/15/2018 | 07/19/2018|B
+459| Nestle |GS |Goldman Sachs |60 | 05/15/2018 | 05/17/2018|B
+987| Cognizant |MS |Morgan Stanley |90 | 05/28/2018 | 05/30/2018|B
+459| Oracle |GS |Goldman Sachs |100 | 07/18/2018 | 07/24/2018|B
+234| IBM |MS |Morgan Stanley |100 | 05/15/2018 | 05/19/2018|S
+257| HCL |GS |Goldman Sachs |20 | 06/21/2018 | 06/28/2018|S
+326| Pepsi |MS |Morgan Stanley |10 | 06/23/2018 | 06/24/2018|S
