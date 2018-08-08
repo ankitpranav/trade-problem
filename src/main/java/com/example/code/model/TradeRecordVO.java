@@ -100,4 +100,18 @@ public class TradeRecordVO {
   public void setBuySellIndicator(String buySellIndicator) {
     this.buySellIndicator = buySellIndicator;
   }
+
+  @Override
+  public String toString() {
+    return "TradeRecordVO{" +
+            "tradeId='" + tradeId + '\'' +
+            ", stockName='" + stockName + '\'' +
+            ", brokerCode='" + brokerCode + '\'' +
+            ", brokerName='" + brokerName + '\'' +
+            ", quantity='" + quantity + '\'' +
+            ", tradeDate='" + tradeDate + '\'' +
+            ", settlementDate='" + settlementDate + '\'' +
+            ", buySellIndicator='" + buySellIndicator + '\'' +
+            '}';
+  }
 }

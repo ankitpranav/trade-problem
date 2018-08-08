@@ -1,6 +1,6 @@
 package com.example.code.validator;
 
-import com.example.code.TradeRecord;
+import com.example.code.entity.TradeRecord;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.stereotype.Service;
 

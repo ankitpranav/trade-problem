@@ -1,6 +1,6 @@
 package com.example.code.repository;
 
-import com.example.code.TradeRecord;
+import com.example.code.entity.TradeRecord;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -14,10 +14,10 @@ import java.util.List;
 @Repository
 public interface TradeRepository extends CrudRepository<TradeRecord,Long> {
 
-    @Query(value = " select t from TradeRecord t where t.brokerCode like %?1% ")
+    @Query(value = " select t from TradeRecord t where t.brokerCode = :brokerCode")
     List<TradeRecord> getTrades(@Param("brokerCode") String brokerCode);
 
-    @Query(value = "select t.stockName,sum(t.quantity) from TradeRecord t " +
-            "WHERE t.buySellIndicator like '%B%'  GROUP BY  stockName,quantity  ORDER BY quantity desc ")
-    List<TradeRecord> getTopFiveStocks();
+    @Query(value = "select t.stockName,sum(t.quantity) as totalCount from TradeRecord t " +
+            "WHERE t.buySellIndicator = :buySellIndicator GROUP BY  stockName  ORDER BY totalCount desc ")
+    List<TradeRecord> getTopFiveStocks(@Param("buySellIndicator") TradeRecord.BuySellIndicator buySellIndicator);
 }

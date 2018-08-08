@@ -1,4 +1,4 @@
-package com.example.code;
+package com.example.code.entity;
 
 import com.opencsv.bean.CsvBindByName;
 
@@ -10,14 +10,11 @@ import javax.persistence.*;
 @Entity
 public class TradeRecord {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  public Long id;
-
   public enum BuySellIndicator {
     B,S
   }
 
+  @Id
   @CsvBindByName
   @Column(name="tradeId", unique=true)
   private String tradeId;
@@ -108,18 +105,9 @@ public class TradeRecord {
     this.buySellIndicator = buySellIndicator;
   }
 
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
   @Override
   public String toString() {
     return "TradeRecord{" +
-            "id=" + id +
             ", tradeId='" + tradeId + '\'' +
             ", stockName='" + stockName + '\'' +
             ", brokerCode='" + brokerCode + '\'' +

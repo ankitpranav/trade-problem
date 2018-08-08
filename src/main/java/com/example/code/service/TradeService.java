@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.example.code.TradeRecord;
+import com.example.code.entity.TradeRecord;
 import com.example.code.repository.TradeDAO;
 import com.example.code.model.TradeRecordVO;
 import com.example.code.repository.TradeRepository;
@@ -24,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.opencsv.bean.CsvToBean;
 
 @Service
-public class UploadService {
+public class TradeService {
 
   @Autowired
   private TradeDAO tradeDAO;
@@ -48,11 +48,11 @@ public class UploadService {
   @Autowired
   private Validator validator;
 
-  private static final org.slf4j.Logger log = LoggerFactory.getLogger(UploadService.class);
+  private static final org.slf4j.Logger log = LoggerFactory.getLogger(TradeService.class);
 
   List<TradeRecordVO> missedList = new ArrayList<TradeRecordVO>();
 
-  public List<TradeRecordVO> uploadFile(MultipartFile multipartFile) throws IOException {
+  public void uploadFile(MultipartFile multipartFile) throws IOException {
 
     File file = convertMultiPartToFile(multipartFile);
 
@@ -68,10 +68,23 @@ public class UploadService {
     CsvToBean<TradeRecordVO> csv = new CsvToBean<TradeRecordVO>();
 
     List<TradeRecordVO> list = csv.parse(strat, new CSVReader(new FileReader(file), '|'));
+    // removes the coloumn name from the list
     list.remove(0);
-    Set<TradeRecordVO> tradeRecordVOSet = new HashSet<>();
-    tradeRecordVOSet.addAll(list);
-    List<TradeRecordVO> tradeRecords = validateData(tradeRecordVOSet);
+    /*removing whitespaces and printing the duplicates on the console*/
+    List<TradeRecordVO> validList = new ArrayList<>();
+    for (TradeRecordVO tradeRecordVO : list){
+      tradeRecordVO.setBrokerCode(tradeRecordVO.getBrokerCode().trim());
+      tradeRecordVO.setStockName(tradeRecordVO.getStockName().trim());
+      tradeRecordVO.setQuantity(tradeRecordVO.getQuantity().trim());
+      tradeRecordVO.setTradeDate(tradeRecordVO.getTradeDate().trim());
+      tradeRecordVO.setSettlementDate(tradeRecordVO.getSettlementDate().trim());
+      if (!validList.contains(tradeRecordVO)){
+        validList.add(tradeRecordVO);
+      } else {
+        System.out.println("Duplicate Records ----->"+ tradeRecordVO);
+      }
+    }
+    List<TradeRecordVO> tradeRecords = validateData(validList);
     List<TradeRecord> tradeRecordList = new ArrayList<>();
     if (!tradeRecords.isEmpty()) {
       for (TradeRecordVO tradeRecordVO : tradeRecords) {
@@ -79,10 +92,13 @@ public class UploadService {
       }
       tradeDAO.storeValidData(tradeRecordList);
     }
-    return missedList;
+    for(TradeRecordVO tradeRecordVO : missedList){
+      System.out.println("Valiadtion Failed Records ----->"+ tradeRecordVO);
+    }
   }
 
-  public List<TradeRecordVO> validateData(Set<TradeRecordVO> tradeRecords) {
+  /*validates the data from the csv file*/
+  private List<TradeRecordVO> validateData(List<TradeRecordVO> tradeRecords) {
 
     List<TradeRecordVO> clonTradeRecordVOs = new ArrayList<>(tradeRecords);
 
@@ -115,11 +131,20 @@ public class UploadService {
   }
 
   public List<TradeRecord> getTrades(String brokerCode){
-    return tradeRepository.getTrades(brokerCode);
+    if (brokerCode != null) {
+      return tradeRepository.getTrades(brokerCode);
+    }
+    System.out.print("Broker Code cannot be null");
+    return null;
   }
 
-  public List<TradeRecord> getTopFiveStocks(){
-    List<TradeRecord> tradeRecordList = tradeRepository.getTopFiveStocks();
-    return tradeRecordList.stream().limit(5).collect(Collectors.toList());
+  public List<TradeRecord> getTopFiveStocks(TradeRecord.BuySellIndicator buySellIndicator){
+    if (buySellIndicator != null) {
+      List<TradeRecord> tradeRecordList = tradeRepository.getTopFiveStocks(buySellIndicator);
+      return tradeRecordList.stream().limit(5).collect(Collectors.toList());
+    } else{
+      System.out.print("BuySell Indicator cannot be null");
+      return null;
+    }
   }
 }
