@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.example.code.entity.TradeRecord;
+import com.example.code.model.StockDetails;
 import com.example.code.repository.TradeDAO;
 import com.example.code.model.TradeRecordVO;
 import com.example.code.repository.TradeRepository;
@@ -138,10 +139,19 @@ public class TradeService {
     return null;
   }
 
-  public List<TradeRecord> getTopFiveStocks(TradeRecord.BuySellIndicator buySellIndicator){
+  public List<StockDetails> getTopFiveStocks(TradeRecord.BuySellIndicator buySellIndicator){
     if (buySellIndicator != null) {
-      List<TradeRecord> tradeRecordList = tradeRepository.getTopFiveStocks(buySellIndicator);
-      return tradeRecordList.stream().limit(5).collect(Collectors.toList());
+      List<Object[]> _stockCounts = tradeRepository.getTopFiveStocks(buySellIndicator);
+      List<StockDetails> stockCounts = new ArrayList<>();
+      for (Object[] object : _stockCounts){
+        if(object != null){
+          StockDetails stockDetails = new StockDetails();
+          stockDetails.setBrokerCode(object[0].toString());
+          stockDetails.setTotalCount((((Number) object[1]).intValue()));
+          stockCounts.add(stockDetails);
+        }
+      }
+      return stockCounts.stream().limit(5).collect(Collectors.toList());
     } else{
       System.out.print("BuySell Indicator cannot be null");
       return null;
