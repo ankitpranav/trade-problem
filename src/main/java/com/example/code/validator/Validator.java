@@ -1,6 +1,7 @@
 package com.example.code.validator;
 
 import com.example.code.entity.TradeRecord;
+import com.example.code.model.BuySellIndicator;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,7 @@ public class Validator {
     }
 
     public boolean validateEnum(String s){
-        return  (s != null && EnumUtils.isValidEnum(TradeRecord.BuySellIndicator.class,s.trim())) ? true : false;
+        return  (s != null && EnumUtils.isValidEnum(BuySellIndicator.class,s.trim())) ? true : false;
     }
 
     public boolean isValidDateFormat(String s) {

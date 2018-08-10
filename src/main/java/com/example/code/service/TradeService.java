@@ -1,13 +1,11 @@
 package com.example.code.service;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import com.example.code.entity.TradeRecord;
+import com.example.code.model.BuySellIndicator;
 import com.example.code.model.StockDetails;
 import com.example.code.repository.TradeDAO;
 import com.example.code.model.TradeRecordVO;
@@ -53,22 +51,35 @@ public class TradeService {
 
   List<TradeRecordVO> missedList = new ArrayList<TradeRecordVO>();
 
-  public void uploadFile(MultipartFile multipartFile) throws IOException {
+  public void uploadFile(MultipartFile multipartFile) {
+    File file = null;
+    try {
+      file = convertMultiPartToFile(multipartFile);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    processFile(file);
+  }
 
-    File file = convertMultiPartToFile(multipartFile);
-
+  public void processFile(File file) {
     ColumnPositionMappingStrategy<TradeRecordVO> strat = new ColumnPositionMappingStrategy<TradeRecordVO>();
     strat.setType(TradeRecordVO.class);
     /**
      * the fields to bind do in your JavaBean
      */
     String[] columns = new String[] { "tradeId", "stockName", "brokerCode", "brokerName",
-        "quantity", "tradeDate", "settlementDate", "buySellIndicator" };
+            "quantity", "tradeDate", "settlementDate", "buySellIndicator" };
     strat.setColumnMapping(columns);
 
     CsvToBean<TradeRecordVO> csv = new CsvToBean<TradeRecordVO>();
 
-    List<TradeRecordVO> list = csv.parse(strat, new CSVReader(new FileReader(file), '|'));
+    List<TradeRecordVO> list = null;
+    try {
+      list = csv.parse(strat, new CSVReader(new FileReader(file), '|'));
+    } catch (FileNotFoundException e) {
+      System.out.println("Exception was thrown! File Not Found or Permission to file not given");
+      e.printStackTrace();
+    }
     // removes the coloumn name from the list
     list.remove(0);
     /*removing whitespaces and printing the duplicates on the console*/
@@ -79,6 +90,7 @@ public class TradeService {
       tradeRecordVO.setQuantity(tradeRecordVO.getQuantity().trim());
       tradeRecordVO.setTradeDate(tradeRecordVO.getTradeDate().trim());
       tradeRecordVO.setSettlementDate(tradeRecordVO.getSettlementDate().trim());
+      tradeRecordVO.setBrokerName(tradeRecordVO.getBrokerName().trim());
       if (!validList.contains(tradeRecordVO)){
         validList.add(tradeRecordVO);
       } else {
@@ -125,9 +137,19 @@ public class TradeService {
 
   private File convertMultiPartToFile(MultipartFile file) throws IOException {
     File convFile = new File(file.getOriginalFilename());
-    FileOutputStream fos = new FileOutputStream(convFile);
-    fos.write(file.getBytes());
-    fos.close();
+    FileOutputStream fos = null;
+    try {
+      fos = new FileOutputStream(convFile);
+      fos.write(file.getBytes());
+      fos.close();
+    } catch (FileNotFoundException e) {
+      System.out.println("Exception was thrown! File Not Found");
+      e.printStackTrace();
+    } catch (IOException e) {
+      System.out.println("Exception was thrown! Unable to open/write to file");
+      e.printStackTrace();
+    }
+
     return convFile;
   }
 
@@ -139,7 +161,7 @@ public class TradeService {
     return null;
   }
 
-  public List<StockDetails> getTopFiveStocks(TradeRecord.BuySellIndicator buySellIndicator){
+  public List<StockDetails> getTopFiveStocks(BuySellIndicator buySellIndicator){
     if (buySellIndicator != null) {
       List<Object[]> _stockCounts = tradeRepository.getTopFiveStocks(buySellIndicator);
       List<StockDetails> stockCounts = new ArrayList<>();

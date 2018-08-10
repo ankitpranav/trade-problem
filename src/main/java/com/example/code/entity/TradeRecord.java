@@ -1,5 +1,6 @@
 package com.example.code.entity;
 
+import com.example.code.model.BuySellIndicator;
 import com.opencsv.bean.CsvBindByName;
 
 import javax.persistence.*;
@@ -9,10 +10,6 @@ import javax.persistence.*;
  */
 @Entity
 public class TradeRecord {
-
-  public enum BuySellIndicator {
-    B,S
-  }
 
   @Id
   @CsvBindByName
